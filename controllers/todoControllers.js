@@ -26,13 +26,53 @@ const createTodo = async (req, res) =>{
 
 //get todos
 
-const getTodos = async (req, res) =>{
-    const todos = await Todo.findAll({where:{user_id: 1}});
-    res.status(200).send(todos);
+const getTodos = async (req, res) => {
+    let userId = req.session.userId;
+    if(userId) {
+        const todos = await Todo.findAll({where: {user_id: userId}});
+        res.status(200).send(todos);
+    }else{
+        res.send('Please login')
+    }
 
 }
 //delete todos
 
+const deleteTodo = async (req, res) =>{
+    const id = req.baseUrl.split('/').slice(-1)[0];
+    try{
+        const todo = await Todo.findByPk(id);
+        if(todo){
+            todo.destroy().then(() =>{
+                console.log('User deleted');
+                res.sendStatus(200);
+            })
+        }else{
+            console.log(`User with the ${id} does not exist`)
+        }
+
+    }catch(err){
+        console.error(err)
+    }
+}
+
+
 //toggle completed
 
-module.exports = {createTodo, getTodos}
+const toggleCompleted = async (req, res) =>{
+    const id = req.baseUrl.split('/').slice(-1)[0]
+    try{
+        const task = await Todo.findByPk(id);
+        if(task) {
+            task.isCompleted = !task.isCompleted;
+            await task.save();
+            res.json(task);
+        }else{
+            console.log(`could not find task with id ${id}`)
+        }
+    }catch(err){
+        console.error(err);
+    }
+}
+
+module.exports = {createTodo, getTodos, toggleCompleted, deleteTodo}

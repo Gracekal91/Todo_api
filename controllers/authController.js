@@ -26,20 +26,19 @@ const handleLogin = async(req, res) =>{
                 }
             },
             process.env.JWT_SECRET,
-            { expiresIn: '5m'}
+            { expiresIn: '15m'}
         );
-        //refresh token
+
         foundUser.accessToken = accessToken;
         const result = await foundUser.save();
         req.session.userId = foundUser.id;
-        console.log('this is the result', foundUser);
 
         //create cookies
         //res.cookie('jwt', accessToken, {httpOnly: true, secure: true, maxAge:24 * 60 * 60 * 1000});
 
         //send authorization access token
-        res.json({accessToken})
-        return foundUser
+        res.json({accessToken, foundUser, session: req.session});
+        return result;
     }else{
         res.sendStatus(401);
     }
@@ -48,15 +47,18 @@ const handleLogin = async(req, res) =>{
 //logout
 
 const handleLogout = async (req, res) =>{
-    req.session.destroy((error) =>{
-        if(error){
-            console.error(error);
-            res.send(error)
-        }else{
-           console.log('You are logged out')
-            res.redirect('/login');
-        }
-    });
+    if(req.session){
+        req.session.destroy((error) =>{
+            if(error){
+                console.error(error);
+                res.send(error)
+            }else{
+                console.log('You are logged out')
+                res.sendStatus(204);
+            }
+        });
+    }
+
 }
 
 module.exports = {handleLogin, handleLogout}

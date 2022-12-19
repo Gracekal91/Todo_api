@@ -22,5 +22,15 @@ const signup = async(req, res) =>{
     }
 }
 
+const getUser =async (req, res) =>{
+    const {email} = req.body;
+    try{
+        const user = await User.findAll({where: {email}})
+        res.send(user);
+    }catch(err){
+        console.log(err)
+    }
+}
 
-module.exports = {signup}
+
+module.exports = {signup, getUser}

@@ -14,7 +14,7 @@ app.use(cors());
 app.use(session({
     secret: process.env.JWT_SECRET,
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
     rolling: true
 }));
 
@@ -28,16 +28,22 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 //Routers
 
-app.use("/register", require("./routes/userRouter"));
-app.use('/auth', require('./routes/auth'));
+app.get('/', (req, res) =>{
+    res.json({message: 'Hello'})
+})
+
+app.use("/signup", require("./routes/userRouter"));
+app.use('/login', require('./routes/auth'));
 app.use('/logout', require('./routes/auth'));
-app.use('/todos', require('./routes/todoRoutes'));
+app.use('/todo/:id', require('./routes/todoRoutes'));
+app.use('/getUser', require('./routes/userRouter'));
+
 
 app.use(verification);
 app.use('/createTodo', require('./routes/todoRoutes'));
-app.get('/', (req, res) =>{
-    res.json({message: 'Hello api'})
-})
+app.use('/todos', require('./routes/todoRoutes'));
+app.use('/delete/:id', require('./routes/todoRoutes'));
+
 
 //Handle relationship
 

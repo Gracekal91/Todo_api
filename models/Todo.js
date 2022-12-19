@@ -9,7 +9,7 @@ module.exports = (sequelize, Sequelize) => {
         },
         isCompleted: {
             type: Sequelize.BOOLEAN,
-            default: false
+            defaultValue: false
         },
         user_id:{
             type: Sequelize.INTEGER,
